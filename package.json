@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@heroui/react": "^2.6.14",
+    "@tabler/icons-react": "^3.30.0",
+    "@tanstack/react-query": "^5.66.7",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
@@ -19,6 +21,7 @@
     "pg": "^8.13.3",
     "react": "^18",
     "react-dom": "^18",
+    "react-use": "^17.6.0",
     "tailwind-merge": "^3.0.1"
   },
   "devDependencies": {

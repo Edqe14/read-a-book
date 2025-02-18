@@ -1,3 +1,4 @@
+import { Navbar } from '@/components/navbar';
 import { auth } from '@/utils/auth';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
@@ -13,5 +14,11 @@ export default async function AuthedLayout({
     return redirect('/');
   }
 
-  return children;
+  return (
+      <main className="max-w-screen-md w-full mx-auto border-x-1 border-beige-600 flex-grow">
+        <Navbar session={session!} />
+
+        {children}
+      </main>
+  );
 }

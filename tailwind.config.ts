@@ -55,7 +55,10 @@ const config: Config = {
         light: {
           colors: {
             primary: oxford,
-            secondary: beige,
+            secondary: {
+              ...beige,
+              foreground: oxford[500],
+            },
           },
         },
       },

@@ -4,11 +4,15 @@ import { eq } from 'drizzle-orm';
 import NextAuth from 'next-auth';
 import Discord from 'next-auth/providers/discord';
 
-declare module 'next-auth' {
-  type JWT = Omit<typeof users.$inferSelect, 'id'> & { id: string };
+export type ExtendedJWT = Omit<typeof users.$inferSelect, 'id'> & {
+  id: string;
+  picture: string;
+  emailVerified: null;
+};
 
+declare module 'next-auth' {
   interface Session {
-    user: JWT;
+    user: ExtendedJWT;
   }
 }
 
@@ -51,7 +55,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user = token;
+      session.user = token as ExtendedJWT;
 
       return session;
     },
