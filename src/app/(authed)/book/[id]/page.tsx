@@ -1,0 +1,35 @@
+import { getBook } from '@/services/book';
+import { BookContent } from './content';
+import { ReadList } from './read-list';
+import { Suspense } from 'react';
+import { Skeleton } from '@heroui/react';
+
+export default async function BookPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const book = await getBook(id);
+
+  return (
+    <section className="px-6">
+      <BookContent book={book} />
+
+      <section className="px-4">
+        <Suspense
+          fallback={
+            <Skeleton
+              className="h-32 rounded-md bg-beige-600/25"
+              classNames={{
+                content: 'bg-beige-600',
+              }}
+            />
+          }
+        >
+          <ReadList book={book} />
+        </Suspense>
+      </section>
+    </section>
+  );
+}

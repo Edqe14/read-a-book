@@ -3,6 +3,7 @@ import {
   pgTable,
   varchar,
   timestamp,
+  char,
   serial,
 } from 'drizzle-orm/pg-core';
 
@@ -17,20 +18,6 @@ export const users = pgTable('users', {
   createdAt: timestamp({
     withTimezone: true,
   }).defaultNow(),
-});
-
-export const categories = pgTable('categories', {
-  id: serial().primaryKey(),
-  name: varchar({ length: 255 }).notNull().unique(),
-});
-
-export const bookCategories = pgTable('book_categories', {
-  bookId: varchar({ length: 255 }).references(() => books.id, {
-    onDelete: 'cascade',
-  }),
-  categoryId: bigint({ mode: 'bigint' }).references(() => categories.id, {
-    onDelete: 'cascade',
-  }),
 });
 
 export const books = pgTable('books', {
@@ -48,4 +35,23 @@ export const books = pgTable('books', {
   createdAt: timestamp({
     withTimezone: true,
   }).defaultNow(),
+  maturityRating: varchar({ length: 127 }),
+  categories: varchar({ length: 255 }).array(),
+});
+
+export const readLists = pgTable('read_lists', {
+  id: serial('id').primaryKey(),
+  userId: bigint({ mode: 'bigint' })
+    .notNull()
+    .references(() => users.id),
+  bookId: varchar({ length: 255 })
+    .notNull()
+    .references(() => books.id),
+  status: char({ length: 1 }).notNull(),
+  startedAt: timestamp({ withTimezone: true }),
+  finishedAt: timestamp({ withTimezone: true }),
+  createdAt: timestamp({ withTimezone: true }).defaultNow(),
+  updatedAt: timestamp({ withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });

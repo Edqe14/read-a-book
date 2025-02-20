@@ -1,7 +1,6 @@
 'use client';
 
 import { searchBooks } from '@/services/book';
-import { cn } from '@/utils/cn';
 import { queryClient } from '@/utils/query';
 import {
   Dropdown,
@@ -20,17 +19,17 @@ import { useDebounce } from 'react-use';
 export const SearchBar = () => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const { isFetching, data, refetch } = useQuery({
+  const { isFetching, data } = useQuery({
     queryKey: ['search-books'],
     queryFn: () => (!query ? null : searchBooks(query, 5)),
   });
 
   useDebounce(
     () => {
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ['search-books'] });
       setOpen(!!query);
     },
-    1000,
+    750,
     [query]
   );
 
@@ -48,6 +47,7 @@ export const SearchBar = () => {
 
         <Input
           size="sm"
+          value={query}
           placeholder="Search a book"
           className="z-10 pointer-events-auto"
           onChange={(e) => {
@@ -68,7 +68,7 @@ export const SearchBar = () => {
 
       <DropdownMenu
         color="secondary"
-        className="max-w-96 relative"
+        className="max-w-96 w-full relative"
         emptyContent={
           isFetching ? (
             <div className="h-48 grid place-items-center">
@@ -80,7 +80,8 @@ export const SearchBar = () => {
         }
         topContent={
           <p className="mb-1.5 px-2">
-            Showing <span className="font-semibold">{data?.items?.length}</span>{' '}
+            Showing{' '}
+            <span className="font-semibold">{data?.items?.length || 0}</span>{' '}
             results
           </p>
         }
@@ -97,10 +98,14 @@ export const SearchBar = () => {
             </a>
           </p>
         }
+        onAction={() => {
+          setOpen(false);
+          setQuery('');
+        }}
       >
         {!isFetching && data
           ? [
-              ...data?.items.map((item) => (
+              ...(data?.items?.map((item) => (
                 <DropdownItem
                   href={`/book/${item.id}`}
                   key={item.id}
@@ -125,14 +130,14 @@ export const SearchBar = () => {
                     ))}
                   </div>
                 </DropdownItem>
-              )),
-              <DropdownItem
-                color="primary"
-                key="more"
-                href={`/search?q=${query}`}
-              >
-                See more
-              </DropdownItem>,
+              )) ?? []),
+              // <DropdownItem
+              //   color="primary"
+              //   key="more"
+              //   href={`/search?q=${query}`}
+              // >
+              //   See more
+              // </DropdownItem>,
             ]
           : []}
       </DropdownMenu>

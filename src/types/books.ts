@@ -1,4 +1,4 @@
-export interface BookResponse {
+export interface BooksResponse {
   kind: string;
   totalItems: number;
   items: BookItem[];

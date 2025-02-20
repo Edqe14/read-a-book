@@ -2,18 +2,18 @@ import type { Config } from 'tailwindcss';
 import { heroui } from '@heroui/react';
 
 const beige = {
-  DEFAULT: '#EBEBD3',
-  50: '#FDFDFB',
-  100: '#FAFAF4',
-  200: '#F7F7ED',
-  300: '#F4F4E6',
-  400: '#EFEFDC',
-  500: '#EBEBD3',
-  600: '#D6D6A4',
-  700: '#BEBE6F',
-  800: '#A1A149',
-  900: '#747435',
-  950: '#515125',
+  DEFAULT: '#E5E3D7',
+  50: '#FDFDFC',
+  100: '#F9F8F6',
+  200: '#F5F4F0',
+  300: '#EFEEE6',
+  400: '#EBE9E0',
+  500: '#E5E3D7',
+  600: '#C3BEA2',
+  700: '#9F976B',
+  800: '#6C6646',
+  900: '#353222',
+  950: '#1C1A12',
 };
 const oxford = {
   DEFAULT: '#1C2541',
@@ -29,6 +29,20 @@ const oxford = {
   900: '#06080E',
   950: '#030407',
 };
+const rose = {
+  DEFAULT: '#F76F53',
+  50: '#FEEFEC',
+  100: '#FDE2DD',
+  200: '#FCC6BB',
+  300: '#FAA999',
+  400: '#F98C77',
+  500: '#F76F53',
+  600: '#F43A15',
+  700: '#BE2709',
+  800: '#7F1A06',
+  900: '#3F0D03',
+  950: '#1D0601',
+};
 
 const config: Config = {
   content: [
@@ -42,6 +56,7 @@ const config: Config = {
       colors: {
         beige,
         oxford,
+        rose,
       },
       fontFamily: {
         inter: ['var(--inter)', 'system-ui', 'sans-serif'],
@@ -59,6 +74,8 @@ const config: Config = {
               ...beige,
               foreground: oxford[500],
             },
+            focus: rose,
+            content4: beige[500],
           },
         },
       },

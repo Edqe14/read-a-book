@@ -15,7 +15,7 @@ export default async function AuthedLayout({
   }
 
   return (
-      <main className="max-w-screen-md w-full mx-auto border-x-1 border-beige-600 flex-grow">
+      <main className="max-w-screen-md w-full mx-auto border-x-1 border-beige-600 flex-grow flex flex-col">
         <Navbar session={session!} />
 
         {children}
