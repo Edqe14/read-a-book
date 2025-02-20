@@ -74,6 +74,7 @@ const config: Config = {
               ...beige,
               foreground: oxford[500],
             },
+            divider: beige[600],
             focus: rose,
             content4: beige[500],
           },

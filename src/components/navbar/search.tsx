@@ -105,32 +105,36 @@ export const SearchBar = () => {
       >
         {!isFetching && data
           ? [
-              ...(data?.items?.map((item) => (
-                <DropdownItem
-                  href={`/book/${item.id}`}
-                  key={item.id}
-                  classNames={{ title: 'flex gap-3' }}
-                >
-                  <div className="flex-shrink-0">
-                    <Image
-                      src={item.volumeInfo?.imageLinks?.thumbnail}
-                      isZoomed
-                      className="w-full"
-                      height={100}
-                      radius="sm"
-                    />
-                  </div>
+              ...(data?.items?.map((item) => {
+                const isbn = item?.volumeInfo?.industryIdentifiers?.find(
+                  (v) => v.type === 'ISBN_13'
+                )?.identifier;
 
-                  <div>
-                    <h3 className="font-semibold">{item.volumeInfo.title}</h3>
-                    {item?.volumeInfo?.industryIdentifiers?.map((id) => (
-                      <p key={id.type}>
-                        {id.type}: {id.identifier}
-                      </p>
-                    ))}
-                  </div>
-                </DropdownItem>
-              )) ?? []),
+                return (
+                  <DropdownItem
+                    href={`/book/${item.id}`}
+                    key={item.id}
+                    classNames={{ title: 'flex gap-3' }}
+                  >
+                    {item.volumeInfo?.imageLinks?.thumbnail && (
+                      <div className="flex-shrink-0">
+                        <Image
+                          src={item.volumeInfo.imageLinks.thumbnail}
+                          className="w-full"
+                          height={100}
+                          radius="sm"
+                        />
+                      </div>
+                    )}
+
+                    <div className="py-0.5">
+                      <h3 className="font-semibold">{item.volumeInfo.title}</h3>
+                      <p>{item?.volumeInfo?.authors.join(', ')}</p>
+                      {isbn && <p>ISBN: {isbn}</p>}
+                    </div>
+                  </DropdownItem>
+                );
+              }) ?? []),
               // <DropdownItem
               //   color="primary"
               //   key="more"

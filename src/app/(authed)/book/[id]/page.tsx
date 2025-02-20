@@ -16,11 +16,11 @@ export default async function BookPage({
     <section className="px-6">
       <BookContent book={book} />
 
-      <section className="px-4">
+      <section className="px-4 pb-16">
         <Suspense
           fallback={
             <Skeleton
-              className="h-32 rounded-md bg-beige-600/25"
+              className="h-72 rounded-xl bg-beige-600/25"
               classNames={{
                 content: 'bg-beige-600',
               }}

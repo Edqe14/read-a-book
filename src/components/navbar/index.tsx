@@ -12,11 +12,14 @@ import {
 import { IconDoorExit, IconUserFilled } from '@tabler/icons-react';
 import { signOut } from 'next-auth/react';
 import { SearchBar } from './search';
+import Link from 'next/link';
 
 export const Navbar = ({ session }: { session: Session }) => {
   return (
     <header className="p-6 flex justify-between">
-      <h1 className="tracking-tighter italic text-xl">read-a-book</h1>
+      <Link href="/dashboard">
+        <h1 className="tracking-tighter italic text-xl">read-a-book</h1>
+      </Link>
 
       <div className="flex items-center gap-4">
         <SearchBar />

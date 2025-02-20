@@ -5,6 +5,9 @@ import {
   timestamp,
   char,
   serial,
+  text,
+  integer,
+  smallint,
 } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -26,7 +29,7 @@ export const books = pgTable('books', {
   authors: varchar({ length: 255 }).array(),
   publisher: varchar({ length: 255 }),
   publishedDate: varchar({ length: 255 }),
-  description: varchar({ length: 2000 }),
+  description: text(),
   isbn10: varchar({ length: 10 }),
   isbn13: varchar({ length: 13 }),
   pageCount: bigint({ mode: 'number' }),
@@ -48,6 +51,9 @@ export const readLists = pgTable('read_lists', {
     .notNull()
     .references(() => books.id),
   status: char({ length: 1 }).notNull(),
+  currentPage: integer().default(0),
+  feedback: text(),
+  rating: smallint(),
   startedAt: timestamp({ withTimezone: true }),
   finishedAt: timestamp({ withTimezone: true }),
   createdAt: timestamp({ withTimezone: true }).defaultNow(),

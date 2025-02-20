@@ -12,5 +12,7 @@ export const ReadList = async ({ book }: { book: Book }) => {
     return <AddToListCard userId={session.user.id} bookId={book.id} />;
   }
 
-  return <ReadingProgress readList={readList} userId={session.user.id} />;
+  return (
+    <ReadingProgress book={book} readList={readList} userId={session.user.id} />
+  );
 };

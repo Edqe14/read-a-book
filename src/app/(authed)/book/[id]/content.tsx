@@ -2,9 +2,10 @@
 
 import { Book } from '@/services/book';
 import { Image } from '@heroui/react';
+import DOMPurify from 'isomorphic-dompurify';
 import { useState, useMemo } from 'react';
 
-const MAX_WORDS = 50;
+const MAX_WORDS = 40;
 
 export const BookContent = ({ book }: { book: Book }) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
@@ -18,7 +19,7 @@ export const BookContent = ({ book }: { book: Book }) => {
     { label: 'Publisher', value: book.publisher },
     { label: 'Published Date', value: book.publishedDate },
     { label: 'ISBN', value: book.isbn13 },
-    { label: 'Categories', value: book.categories ?? '-' },
+    { label: 'Categories', value: book.categories?.[0] ?? '-' },
   ];
 
   return (
@@ -47,13 +48,16 @@ export const BookContent = ({ book }: { book: Book }) => {
       <section className="space-y-1 mb-8">
         <h3 className="font-semibold">Description</h3>
         <p className="leading-relaxed text-ellipsis">
-          {(isDescriptionTooLong && !isDescriptionExpanded && (
-            <>
-              {book.description?.split(' ').slice(0, MAX_WORDS).join(' ') +
-                '...'}
-            </>
-          )) ||
-            book.description}{' '}
+          <div
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(
+                isDescriptionTooLong && !isDescriptionExpanded
+                  ? book.description?.split(' ').slice(0, MAX_WORDS).join(' ') +
+                      '...'
+                  : book.description ?? ''
+              ),
+            }}
+          />
           {isDescriptionTooLong && (
             <button
               onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
