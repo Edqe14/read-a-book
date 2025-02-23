@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "npm run db:push",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@heroui/react": "^2.6.14",
