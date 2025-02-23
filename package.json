@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.6.14",
+    "@sentry/nextjs": "^9",
     "@tabler/icons-react": "^3.30.0",
     "@tanstack/react-query": "^5.66.7",
     "clsx": "^2.1.1",
