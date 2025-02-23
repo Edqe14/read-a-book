@@ -22,7 +22,6 @@ import { useForm } from 'react-hook-form';
 import { ReadListFilter } from './_validator';
 import { z } from 'zod';
 import { useOnClickOutside } from 'usehooks-ts';
-import { useKeyPress, useKeyPressEvent } from 'react-use';
 
 export const ReadListFilterMenu = () => {
   const router = useRouter();
