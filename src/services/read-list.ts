@@ -4,7 +4,7 @@ import { db } from '@/db';
 import { readLists } from '@/db/schema';
 import { ListOptions } from '@/types/db';
 import { ReadListStatus } from '@/types/read-lists';
-import { eq, SQL } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export const getAllReadLists = async (
   userId: string,

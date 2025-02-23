@@ -1,5 +1,5 @@
 export const createQueryString = (
-  queryObject: { [key: string]: any } = {}
+  queryObject: { [key: string]: string | string[] | number } = {}
 ): string => {
   const queryString = Object.keys(queryObject)
     .filter(
