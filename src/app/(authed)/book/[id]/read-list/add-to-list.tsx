@@ -23,8 +23,8 @@ export const AddToListCard = ({
 
       startTransition(() => {
         router.refresh();
+        setIsLoading(false);
       });
-      router.refresh();
     } catch (err) {
       console.error(err);
       setIsLoading(false);

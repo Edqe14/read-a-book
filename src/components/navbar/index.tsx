@@ -9,15 +9,16 @@ import {
   DropdownTrigger,
   Image,
 } from '@heroui/react';
-import { IconDoorExit, IconUserFilled } from '@tabler/icons-react';
+import { IconBook, IconDoorExit, IconUserFilled } from '@tabler/icons-react';
 import { signOut } from 'next-auth/react';
 import { SearchBar } from './search';
 import Link from 'next/link';
+import { Routes } from '@/types/routes';
 
 export const Navbar = ({ session }: { session: Session }) => {
   return (
-    <header className="p-6 flex justify-between">
-      <Link href="/dashboard">
+    <header className="p-6 flex justify-between sticky top-0 h-20 z-50 bg-beige">
+      <Link href={Routes.DASHBOARD}>
         <h1 className="tracking-tighter italic text-xl">read-a-book</h1>
       </Link>
 
@@ -31,7 +32,7 @@ export const Navbar = ({ session }: { session: Session }) => {
             </Button>
           </DropdownTrigger>
 
-          <DropdownMenu color="secondary">
+          <DropdownMenu color="primary">
             <DropdownItem
               key="profile"
               isReadOnly
@@ -44,6 +45,14 @@ export const Navbar = ({ session }: { session: Session }) => {
                 <h4 className="text-base font-semibold">{session.user.nick}</h4>
                 <p>@{session.user.name}</p>
               </div>
+            </DropdownItem>
+
+            <DropdownItem
+              key="reading-list"
+              href="/reading-list"
+              startContent={<IconBook size={16} />}
+            >
+              Reading list
             </DropdownItem>
 
             <DropdownItem

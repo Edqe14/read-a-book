@@ -102,3 +102,30 @@ export interface DownloadInfo {
 export interface SearchInfo {
   textSnippet: string;
 }
+
+export const Ratings = [
+  {
+    value: 5,
+    label: '5 — I love it!',
+  },
+  {
+    value: 4,
+    label: '4 — I like it!',
+  },
+  {
+    value: 3,
+    label: "3 — It's okay!",
+  },
+  {
+    value: 2,
+    label: "2 — I don't like it!",
+  },
+  {
+    value: 1,
+    label: '1 — I hate it!',
+  },
+] as const;
+
+export const RatingParams = ['5', '4', '3', '2', '1'] as const;
+
+export type RatingNumbers = (typeof Ratings)[number]['value'];

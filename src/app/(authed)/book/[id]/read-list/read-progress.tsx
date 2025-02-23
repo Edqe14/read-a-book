@@ -13,33 +13,7 @@ import { ReadList, updateReadList } from '@/services/read-list';
 import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@/services/book';
-
-// TODO: update progress
-// TODO: show progress form
-// TODO: show feedback form
-
-const Ratings = [
-  {
-    value: 5,
-    label: '5 — I love it!',
-  },
-  {
-    value: 4,
-    label: '4 — I like it!',
-  },
-  {
-    value: 3,
-    label: "3 — It's okay!",
-  },
-  {
-    value: 2,
-    label: "2 — I don't like it!",
-  },
-  {
-    value: 1,
-    label: '1 — I hate it!',
-  },
-];
+import { Ratings } from '@/types/books';
 
 export const ReadingProgress = ({
   readList,
@@ -88,6 +62,7 @@ export const ReadingProgress = ({
       <Select
         aria-label="Reading status"
         isLoading={isStatusUpdating}
+        isDisabled={isStatusUpdating}
         defaultSelectedKeys={[readList.status]}
         onSelectionChange={async (keys) => {
           setIsStatusUpdating(true);

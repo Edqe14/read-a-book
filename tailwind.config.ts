@@ -76,6 +76,7 @@ const config: Config = {
             },
             divider: beige[600],
             focus: rose,
+            danger: rose,
             content4: beige[500],
           },
         },

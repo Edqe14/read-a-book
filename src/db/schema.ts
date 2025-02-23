@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   bigint,
   pgTable,
@@ -61,3 +62,14 @@ export const readLists = pgTable('read_lists', {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export const readListRelation = relations(readLists, ({ one }) => ({
+  user: one(users, {
+    fields: [readLists.userId],
+    references: [users.id],
+  }),
+  book: one(books, {
+    fields: [readLists.bookId],
+    references: [books.id],
+  }),
+}));

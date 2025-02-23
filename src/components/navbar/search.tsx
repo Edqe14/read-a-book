@@ -129,7 +129,13 @@ export const SearchBar = () => {
 
                     <div className="py-0.5">
                       <h3 className="font-semibold">{item.volumeInfo.title}</h3>
-                      <p>{item?.volumeInfo?.authors.join(', ')}</p>
+                      <p>
+                        {item?.volumeInfo?.publishedDate &&
+                          new Date(
+                            item?.volumeInfo?.publishedDate
+                          ).getFullYear()}{' '}
+                        &mdash; {item?.volumeInfo?.authors?.join(', ')}
+                      </p>
                       {isbn && <p>ISBN: {isbn}</p>}
                     </div>
                   </DropdownItem>
