@@ -15,10 +15,19 @@ RUN bun run build
 # Production image, copy all the files and run next
 FROM base AS runner
 
+ARG SENTRY_AUTH_TOKEN, DATABASE_URL
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+ENV DATABASE_URL=${DATABASE_URL}
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+ENV SENTRY_URL=https://errors.edqe.me/
+ENV SENTRY_ORG=tsuiika
+ENV SENTRY_PROJECT=read-a-book
+ENV SENTRY_SAMPLE_RATE=0.4
 
 RUN addgroup --system nodejs && \
   adduser --system nextjs

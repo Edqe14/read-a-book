@@ -11,11 +11,6 @@ env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
-  SENTRY_URL: https://errors.edqe.me/
-  SENTRY_ORG: tsuiika
-  SENTRY_PROJECT: read-a-book
-  SENTRY_SAMPLE_RATE: 0.4
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -46,6 +41,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            "SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}"
+            "DATABASE_URL=${{ env.DATABASE_URL }}"
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
