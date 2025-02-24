@@ -10,7 +10,7 @@
     "postinstall": "npm run db:push",
     "db:push": "drizzle-kit push"
   },
-  "packageManager": "yarn",
+  "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@heroui/react": "^2.6.14",
     "@sentry/nextjs": "^9",
