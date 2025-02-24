@@ -9,6 +9,7 @@ import {
   text,
   integer,
   smallint,
+  index,
 } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -47,10 +48,10 @@ export const readLists = pgTable('read_lists', {
   id: serial('id').primaryKey(),
   userId: bigint({ mode: 'bigint' })
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   bookId: varchar({ length: 255 })
     .notNull()
-    .references(() => books.id),
+    .references(() => books.id, { onDelete: 'cascade' }),
   status: char({ length: 1 }).notNull(),
   currentPage: integer().default(0),
   feedback: text(),
@@ -78,7 +79,7 @@ export const userActivity = pgTable('user_activity', {
   id: serial('id').primaryKey(),
   userId: bigint({ mode: 'bigint' })
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   activityType: char({ length: 1 }).notNull(),
   activitySubType: char({ length: 1 }),
   detailId: varchar({ length: 128 }),
@@ -88,6 +89,55 @@ export const userActivity = pgTable('user_activity', {
 export const userActivityRelations = relations(userActivity, ({ one }) => ({
   user: one(users, {
     fields: [userActivity.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userProfiles = pgTable('user_profiles', {
+  userId: bigint({ mode: 'bigint' })
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  bio: text(),
+  location: varchar({ length: 255 }),
+  website: varchar({ length: 255 }),
+  avatarUrl: varchar({ length: 1000 }),
+  createdAt: timestamp({ withTimezone: true }).defaultNow(),
+  updatedAt: timestamp({ withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+});
+
+export const userProfileRelations = relations(userProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [userProfiles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userFollowing = pgTable(
+  'user_followings',
+  {
+    followerId: bigint({ mode: 'bigint' })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    followingId: bigint({ mode: 'bigint' })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: timestamp({ withTimezone: true }).defaultNow(),
+  },
+  (table) => [
+    index('user_following_followingId').on(table.followingId),
+    index('user_following_followerId').on(table.followerId),
+  ]
+);
+
+export const userFollowingRelations = relations(userFollowing, ({ one }) => ({
+  follower: one(users, {
+    fields: [userFollowing.followerId],
+    references: [users.id],
+  }),
+  following: one(users, {
+    fields: [userFollowing.followingId],
     references: [users.id],
   }),
 }));

@@ -35,9 +35,9 @@ export const Navbar = ({ session }: { session: Session }) => {
           <DropdownMenu color="primary">
             <DropdownItem
               key="profile"
-              isReadOnly
               className="mb-2"
               classNames={{ title: 'flex gap-3 items-center' }}
+              href={`${Routes.USER_SHORT}${session.user.name}`}
             >
               <Image src={session.user.picture} alt="Profile pict" width={50} />
 
