@@ -8,6 +8,13 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+  SENTRY_URL: https://errors.edqe.me/
+  SENTRY_ORG: tsuiika
+  SENTRY_PROJECT: read-a-book
+  SENTRY_SAMPLE_RATE: 0.4
 
 jobs:
   build-and-push:
