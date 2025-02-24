@@ -34,7 +34,7 @@ export const ReadListFilterMenu = () => {
     defaultValues: {
       status: null,
       rating: null,
-      sortBy: ReadListSortCategories.RECENT,
+      sortBy: ReadListSortCategories.RECENT as string,
     },
   });
 
@@ -60,7 +60,7 @@ export const ReadListFilterMenu = () => {
     );
 
     Object.entries(param.data ?? {}).forEach(([key, value]) => {
-      form.setValue(key as keyof z.infer<typeof ReadListFilter>, value as any);
+      form.setValue(key as keyof z.infer<typeof ReadListFilter>, value);
     });
   }, [params]);
 

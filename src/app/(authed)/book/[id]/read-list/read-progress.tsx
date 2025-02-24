@@ -17,7 +17,6 @@ import { Ratings } from '@/types/books';
 
 export const ReadingProgress = ({
   readList,
-  userId,
   book,
 }: {
   readList: ReadList;

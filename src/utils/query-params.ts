@@ -1,5 +1,5 @@
 export const createQueryString = (
-  queryObject: { [key: string]: string | string[] | number } = {}
+  queryObject: { [key: string]: string | string[] | number | null } = {}
 ): string => {
   const queryString = Object.keys(queryObject)
     .filter(
@@ -16,7 +16,7 @@ export const createQueryString = (
                 `${encodeURIComponent(key)}[]=${encodeURIComponent(item)}`
             )
             .join('&')
-        : `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+        : `${encodeURIComponent(key)}=${encodeURIComponent(value!)}`;
     })
     .join('&');
 

@@ -50,6 +50,7 @@ export const ReadingListContent = ({ readLists }: { readLists: ReadLists }) => {
                   <div className="flex-shrink-0">
                     <Image
                       src={readList.book.thumbnail}
+                      alt={`Cover for ${readList.book.title}`}
                       height={150}
                       radius="sm"
                     />

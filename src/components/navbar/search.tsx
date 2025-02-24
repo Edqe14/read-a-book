@@ -120,6 +120,7 @@ export const SearchBar = () => {
                       <div className="flex-shrink-0">
                         <Image
                           src={item.volumeInfo.imageLinks.thumbnail}
+                          alt={`Cover for ${item.volumeInfo.title}`}
                           className="w-full"
                           height={100}
                           radius="sm"

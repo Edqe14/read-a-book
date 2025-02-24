@@ -7,7 +7,7 @@ import {
   ReadListStatusValue,
 } from '@/types/read-lists';
 import { RatingNumbers } from '@/types/books';
-import { sql, SQL } from 'drizzle-orm';
+import { SQL } from 'drizzle-orm';
 import { ReadListFilter } from './_validator';
 
 type ReadingListProps = {
