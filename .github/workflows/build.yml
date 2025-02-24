@@ -45,7 +45,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          secrets: |
+          build-args: |
             "SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}"
             "DATABASE_URL=${{ env.DATABASE_URL }}"
 

@@ -1,6 +1,8 @@
 FROM imbios/bun-node:1.2.3-18.20.7-alpine AS base
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN
-RUN --mount=type=secret,id=DATABASE_URL
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN)
+RUN --mount=type=secret,id=DATABASE_URL \
+    export DATABASE_URL=$(cat /run/secrets/DATABASE_URL)
 
 WORKDIR /app
 
