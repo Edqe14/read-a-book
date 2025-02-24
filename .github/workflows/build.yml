@@ -8,8 +8,6 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
 jobs:
   build-and-push:
@@ -42,8 +40,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            SENTRY_AUTH_TOKEN=${{ env.SENTRY_AUTH_TOKEN }}
-            DATABASE_URL=${{ env.DATABASE_URL }}
+            SENTRY_AUTH_TOKEN=${{ secrets.DATABASE_URL }}
+            DATABASE_URL=${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2

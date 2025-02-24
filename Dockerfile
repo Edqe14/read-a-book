@@ -17,7 +17,7 @@ ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN bun run build
-RUN bun run db:push
+# RUN bun run db:push
 
 # Production image, copy all the files and run next
 FROM base AS runner
