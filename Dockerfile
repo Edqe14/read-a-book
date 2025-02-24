@@ -1,4 +1,6 @@
 FROM imbios/bun-node:1.2.3-18.20.7-alpine AS base
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN
+RUN --mount=type=secret,id=DATABASE_URL,env=DATABASE_URL
 
 WORKDIR /app
 
@@ -8,19 +10,13 @@ RUN apk add --no-cache libc6-compat
 COPY . .
 RUN bun install
 
-ARG SENTRY_AUTH_TOKEN
-ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
-
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN bun run build
-# RUN bun run db:push
+RUN bun run db:push
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM node:20-alpine AS runner
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
