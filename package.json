@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "prod": "npm run db:push && node server.js",
     "lint": "next lint",
     "db:push": "drizzle-kit push"
   },
