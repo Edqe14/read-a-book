@@ -4,12 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && drizzle-kit push",
     "start": "next start",
     "lint": "next lint",
     "db:push": "drizzle-kit push"
   },
-  "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@heroui/react": "^2.6.14",
     "@sentry/nextjs": "^9",
