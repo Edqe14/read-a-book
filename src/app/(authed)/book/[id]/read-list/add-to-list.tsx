@@ -5,13 +5,7 @@ import { Card, Button } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { startTransition, useState } from 'react';
 
-export const AddToListCard = ({
-  userId,
-  bookId,
-}: {
-  userId: string;
-  bookId: string;
-}) => {
+export const AddToListCard = ({ bookId }: { bookId: string }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +13,7 @@ export const AddToListCard = ({
     setIsLoading(true);
 
     try {
-      await addToReadList(userId, bookId);
+      await addToReadList(bookId);
 
       startTransition(() => {
         router.refresh();

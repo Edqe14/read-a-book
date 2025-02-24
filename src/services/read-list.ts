@@ -2,9 +2,14 @@
 
 import { db } from '@/db';
 import { readLists } from '@/db/schema';
-import { ListOptions } from '@/types/db';
+import { ListOptions, NotFoundError } from '@/types/db';
 import { ReadListStatus } from '@/types/read-lists';
 import { eq } from 'drizzle-orm';
+import { createActivity } from './activity';
+import { omit } from 'lodash-es';
+import { UserActivity } from '@/types/activity';
+import { AuthError } from 'next-auth';
+import { auth } from '@/utils/auth';
 
 export const getAllReadLists = async (
   userId: string,
@@ -60,12 +65,12 @@ export const getBookReadList = async (userId: string, bookId: string) => {
   });
 };
 
-export const addToReadList = async (
-  userId: string,
-  bookId: string
-): Promise<boolean> => {
+export const addToReadList = async (bookId: string): Promise<boolean> => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
   await db.insert(readLists).values({
-    userId: BigInt(userId),
+    userId: BigInt(session.user.id),
     bookId,
     status: ReadListStatus.PENDING,
   });
@@ -75,17 +80,53 @@ export const addToReadList = async (
 
 export const updateReadList = async (
   readListId: number,
-  data: Partial<ReadList>
+  data: Partial<Omit<ReadList, 'userId'>>
 ) => {
-  if (data.status === ReadListStatus.READING) {
-    data.startedAt = new Date();
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  const existing = await db.query.readLists.findFirst({
+    where: (list, { eq }) => eq(list.id, readListId),
+    columns: {
+      id: true,
+      userId: true,
+      bookId: true,
+    },
+  });
+  if (!existing) {
+    throw new NotFoundError();
   }
 
-  if (data.status === ReadListStatus.FINISHED) {
-    data.finishedAt = new Date();
+  const promises = [];
+
+  if (data.status) {
+    if (data.status === ReadListStatus.READING) {
+      data.startedAt = new Date();
+    }
+
+    if (data.status === ReadListStatus.FINISHED) {
+      data.finishedAt = new Date();
+    }
+
+    if (data.status !== ReadListStatus.PENDING) {
+      promises.push(
+        createActivity({
+          userId: existing.userId,
+          activityType: UserActivity.BOOK.toString(),
+          activitySubType: data.status,
+          detailId: existing.bookId,
+        })
+      );
+    }
   }
 
-  await db.update(readLists).set(data).where(eq(readLists.id, readListId));
+  await Promise.all([
+    db
+      .update(readLists)
+      .set(omit(data, 'userId', 'bookId'))
+      .where(eq(readLists.id, readListId)),
+    ...promises,
+  ]);
 
   return true;
 };

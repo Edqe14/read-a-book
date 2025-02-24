@@ -20,7 +20,6 @@ export const ReadingProgress = ({
   book,
 }: {
   readList: ReadList;
-  userId: string;
   book: Book;
 }) => {
   const router = useRouter();

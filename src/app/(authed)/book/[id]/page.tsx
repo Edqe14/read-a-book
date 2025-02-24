@@ -3,6 +3,7 @@ import { BookContent } from './content';
 import { ReadList } from './read-list';
 import { Suspense } from 'react';
 import { Skeleton } from '@heroui/react';
+import { notFound } from 'next/navigation';
 
 export default async function BookPage({
   params,
@@ -11,6 +12,10 @@ export default async function BookPage({
 }) {
   const { id } = await params;
   const book = await getBook(id);
+
+  if (!book) {
+    return notFound();
+  }
 
   return (
     <section className="px-6">

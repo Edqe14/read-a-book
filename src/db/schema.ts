@@ -25,7 +25,7 @@ export const users = pgTable('users', {
 });
 
 export const books = pgTable('books', {
-  id: varchar({ length: 255 }).primaryKey(),
+  id: varchar({ length: 24 }).primaryKey(),
   title: varchar({ length: 255 }).notNull(),
   authors: varchar({ length: 255 }).array(),
   publisher: varchar({ length: 255 }),
@@ -71,5 +71,23 @@ export const readListRelation = relations(readLists, ({ one }) => ({
   book: one(books, {
     fields: [readLists.bookId],
     references: [books.id],
+  }),
+}));
+
+export const userActivity = pgTable('user_activity', {
+  id: serial('id').primaryKey(),
+  userId: bigint({ mode: 'bigint' })
+    .notNull()
+    .references(() => users.id),
+  activityType: char({ length: 1 }).notNull(),
+  activitySubType: char({ length: 1 }),
+  detailId: varchar({ length: 128 }),
+  createdAt: timestamp({ withTimezone: true }).defaultNow(),
+});
+
+export const userActivityRelations = relations(userActivity, ({ one }) => ({
+  user: one(users, {
+    fields: [userActivity.userId],
+    references: [users.id],
   }),
 }));
