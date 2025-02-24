@@ -8,13 +8,10 @@ RUN apk add --no-cache libc6-compat
 COPY . .
 RUN bun install
 
-ARG SENTRY_AUTH_TOKEN, DATABASE_URL
-
-ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
-ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN bun run build
+RUN bun run db:push
 
 # Production image, copy all the files and run next
 FROM base AS runner
