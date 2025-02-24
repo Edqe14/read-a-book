@@ -14,15 +14,14 @@ ENV SENTRY_ORG=tsuiika
 ENV SENTRY_PROJECT=read-a-book
 ENV SENTRY_SAMPLE_RATE=0.4
 
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN
-RUN --mount=type=secret,id=DATABASE_URL
-
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) \
-    bun run build
-RUN DATABASE_URL=$(cat /run/secrets/DATABASE_URL) \
-    bun run db:push
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
+      SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) \
+      bun run build
+RUN --mount=type=secret,id=DATABASE_URL \
+      DATABASE_URL=$(cat /run/secrets/DATABASE_URL) \
+      bun run db:push
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS runner
