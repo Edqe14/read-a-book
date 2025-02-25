@@ -100,19 +100,12 @@ export const userProfiles = pgTable('user_profiles', {
   bio: text(),
   location: varchar({ length: 255 }),
   website: varchar({ length: 255 }),
-  avatarUrl: varchar({ length: 1000 }),
+  picture: varchar({ length: 1000 }),
   createdAt: timestamp({ withTimezone: true }).defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
-
-export const userProfileRelations = relations(userProfiles, ({ one }) => ({
-  user: one(users, {
-    fields: [userProfiles.userId],
-    references: [users.id],
-  }),
-}));
 
 export const userFollowing = pgTable(
   'user_followings',
@@ -140,4 +133,19 @@ export const userFollowingRelations = relations(userFollowing, ({ one }) => ({
     fields: [userFollowing.followingId],
     references: [users.id],
   }),
+}));
+
+export const userProfileRelations = relations(userProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [userProfiles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userRelations = relations(users, ({ many, one }) => ({
+  readLists: many(readLists),
+  activities: many(userActivity),
+  profile: one(userProfiles),
+  followers: many(userFollowing, { relationName: 'followingId' }),
+  following: many(userFollowing, { relationName: 'followerId' }),
 }));

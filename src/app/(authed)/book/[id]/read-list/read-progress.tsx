@@ -134,6 +134,7 @@ export const ReadingProgress = ({
             label="Notes"
             className="col-span-2"
             defaultValue={readList.feedback ?? ''}
+            maxLength={255}
           />
           <Button
             isLoading={isFormSubmitting}

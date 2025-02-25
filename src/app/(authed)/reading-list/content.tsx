@@ -129,10 +129,8 @@ export const ReadingListContent = ({ readLists }: { readLists: ReadLists }) => {
                     <div>
                       <h5 className="font-semibold text-sm">Rating</h5>
                       <p>
-                        {
-                          Ratings.find((v) => v.value === readList.rating)
-                            ?.label
-                        }
+                        {Ratings.find((v) => v.value === readList.rating)
+                          ?.label ?? '-'}
                       </p>
                     </div>
                   </div>

@@ -3,13 +3,14 @@
 import { db } from '@/db';
 import { readLists } from '@/db/schema';
 import { ListOptions, NotFoundError } from '@/types/db';
-import { ReadListStatus } from '@/types/read-lists';
+import { ReadListStatus, ReadListStatusValues } from '@/types/read-lists';
 import { eq } from 'drizzle-orm';
 import { createActivity } from './activity';
 import { omit } from 'lodash-es';
 import { UserActivity } from '@/types/activity';
 import { AuthError } from 'next-auth';
 import { auth } from '@/utils/auth';
+import { z } from 'zod';
 
 export const getAllReadLists = async (
   userId: string,
@@ -78,12 +79,21 @@ export const addToReadList = async (bookId: string): Promise<boolean> => {
   return true;
 };
 
+const readListValidator = z.object({
+  status: z.enum(ReadListStatusValues).optional(),
+  currentPage: z.number().optional(),
+  rating: z.number().min(1).max(5).optional(),
+  feedback: z.string().max(255).optional(),
+});
+
 export const updateReadList = async (
   readListId: number,
   data: Partial<Omit<ReadList, 'userId'>>
 ) => {
   const session = await auth();
   if (!session) throw new AuthError();
+
+  data = await readListValidator.parseAsync(data);
 
   const existing = await db.query.readLists.findFirst({
     where: (list, { eq }) => eq(list.id, readListId),

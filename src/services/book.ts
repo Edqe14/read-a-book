@@ -73,4 +73,4 @@ export const getBook = async (id: string) => {
   return newBook;
 };
 
-export type Book = Awaited<ReturnType<typeof getBook>>;
+export type Book = NonNullable<Awaited<ReturnType<typeof getBook>>>;
