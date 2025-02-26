@@ -2,11 +2,11 @@
 
 import { db } from '@/db';
 import { readLists } from '@/db/schema';
-import { ListOptions, NotFoundError } from '@/types/db';
+import { ListOptions, NotFoundError, UnauthorizedError } from '@/types/db';
 import { ReadListStatus, ReadListStatusValues } from '@/types/read-lists';
 import { eq } from 'drizzle-orm';
 import { createActivity } from './activity';
-import { omit } from 'lodash-es';
+import { isNil, omit } from 'lodash-es';
 import { UserActivity } from '@/types/activity';
 import { AuthError } from 'next-auth';
 import { auth } from '@/utils/auth';
@@ -88,12 +88,10 @@ const readListValidator = z.object({
 
 export const updateReadList = async (
   readListId: number,
-  data: Partial<Omit<ReadList, 'userId'>>
+  data: Partial<Omit<ReadList, 'userId'>>,
+  userId?: string
 ) => {
-  const session = await auth();
-  if (!session) throw new AuthError();
-
-  data = await readListValidator.parseAsync(data);
+  await readListValidator.parseAsync(data);
 
   const existing = await db.query.readLists.findFirst({
     where: (list, { eq }) => eq(list.id, readListId),
@@ -105,6 +103,10 @@ export const updateReadList = async (
   });
   if (!existing) {
     throw new NotFoundError();
+  }
+
+  if (!isNil(userId) && existing.userId.toString() !== userId) {
+    throw new UnauthorizedError();
   }
 
   const promises = [];
@@ -139,6 +141,20 @@ export const updateReadList = async (
   ]);
 
   return true;
+};
+
+export const updateReadListByAuth = async (
+  id: number,
+  data: Partial<Omit<ReadList, 'id' | 'userId'>>
+) => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  return updateReadList(
+    id,
+    Object.assign(data, { userId: session.user.id }),
+    session.user.id
+  );
 };
 
 export type ReadList = NonNullable<Awaited<ReturnType<typeof getBookReadList>>>;

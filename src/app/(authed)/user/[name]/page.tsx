@@ -1,11 +1,16 @@
 import { getUserByName } from '@/services/user';
 import { auth } from '@/utils/auth';
 import { Button, Image, Tooltip } from '@heroui/react';
-import { IconMapPinFilled, IconPencil, IconWorld } from '@tabler/icons-react';
+import {
+  IconBallpenFilled,
+  IconMapPinFilled,
+  IconWorld,
+} from '@tabler/icons-react';
 import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { EditProfileModal } from './edit-profile/modal';
 
 type ProfilePageProps = {
   params: Promise<{
@@ -44,6 +49,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 <p className="text-sm flex gap-1">
                   Joined
                   <Tooltip
+                    placement="bottom"
                     color="danger"
                     content={DateTime.fromJSDate(
                       user.createdAt!
@@ -68,16 +74,19 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 </Link>
               )}
               {user.profile?.location && (
-                <Button color="danger" variant="flat" isIconOnly>
-                  <IconMapPinFilled />
-                </Button>
+                <Tooltip
+                  placement="bottom"
+                  content={user.profile.location}
+                  color="danger"
+                >
+                  <Button color="danger" variant="flat" isIconOnly>
+                    <IconMapPinFilled />
+                  </Button>
+                </Tooltip>
               )}
 
               {user.id.toString() === session.user.id && (
-                // TODO: modal edit
-                <Button color="warning" variant="flat" isIconOnly>
-                  <IconPencil />
-                </Button>
+                <EditProfileModal user={user} />
               )}
             </div>
           </section>

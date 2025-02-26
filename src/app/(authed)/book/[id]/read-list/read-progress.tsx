@@ -9,7 +9,11 @@ import {
   Textarea,
 } from '@heroui/react';
 import { ReadListStatus } from '@/types/read-lists';
-import { ReadList, updateReadList } from '@/services/read-list';
+import {
+  ReadList,
+  updateReadList,
+  updateReadListByAuth,
+} from '@/services/read-list';
 import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@/services/book';
@@ -32,7 +36,7 @@ export const ReadingProgress = ({
     setIsFormSubmitting(true);
     const form = new FormData(event.currentTarget);
 
-    await updateReadList(readList.id, {
+    await updateReadListByAuth(readList.id, {
       currentPage: Number(form.get('page')),
       rating: Number(form.get('rating')),
       feedback: form.get('feedback') as string,
@@ -64,7 +68,7 @@ export const ReadingProgress = ({
         defaultSelectedKeys={[readList.status]}
         onSelectionChange={async (keys) => {
           setIsStatusUpdating(true);
-          await updateReadList(readList.id, {
+          await updateReadListByAuth(readList.id, {
             status: (keys as Set<string>).values().next().value,
           });
 

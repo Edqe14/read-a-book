@@ -1,7 +1,11 @@
+'use server';
+
 import { db } from '@/db';
 import { userProfiles, users } from '@/db/schema';
+import { auth } from '@/utils/auth';
 import { eq } from 'drizzle-orm';
-import { isEmpty, isNil } from 'lodash-es';
+import { AuthError } from 'next-auth';
+import { z } from 'zod';
 
 export const getUser = async (id: string) => {
   return await db.query.users.findFirst({
@@ -63,6 +67,10 @@ export const getUserByName = async (name: string) => {
   });
 };
 
+export type UserWithProfile = NonNullable<
+  Awaited<ReturnType<typeof getUserByName>>
+>;
+
 // User profile
 export const getUserProfile = async (id: string) => {
   return await db.query.userProfiles.findFirst({
@@ -86,10 +94,18 @@ export const createUserProfile = async (
   )[0];
 };
 
+const editProfileValidator = z.object({
+  bio: z.string().max(255).nullable().optional(),
+  website: z.string().max(64).nullable().optional(),
+  location: z.string().max(32).nullable().optional(),
+});
+
 export const updateUserProfile = async (
   id: string,
   data: Partial<Omit<typeof userProfiles.$inferInsert, 'userId'>>
 ) => {
+  await editProfileValidator.parseAsync(data);
+
   return (
     await db
       .update(userProfiles)
@@ -99,6 +115,16 @@ export const updateUserProfile = async (
       .execute()
   )[0];
 };
+
+export const updateUserProfileByAuth = async (
+  data: Partial<Omit<typeof userProfiles.$inferInsert, 'userId'>>
+) => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  return await updateUserProfile(session.user.id, data);
+};
+
 export const createOrUpdateUserProfile = async (
   id: string,
   updateData: Partial<Omit<typeof userProfiles.$inferInsert, 'userId'>>,

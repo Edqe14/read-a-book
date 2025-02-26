@@ -98,8 +98,8 @@ export const userProfiles = pgTable('user_profiles', {
     .primaryKey()
     .references(() => users.id, { onDelete: 'cascade' }),
   bio: text(),
-  location: varchar({ length: 255 }),
-  website: varchar({ length: 255 }),
+  location: varchar({ length: 32 }),
+  website: varchar({ length: 64 }),
   picture: varchar({ length: 1000 }),
   createdAt: timestamp({ withTimezone: true }).defaultNow(),
   updatedAt: timestamp({ withTimezone: true })
