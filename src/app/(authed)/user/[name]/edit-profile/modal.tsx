@@ -20,10 +20,12 @@ import {
 import { useRouter } from 'next/navigation';
 import { startTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useProgress } from 'react-transition-progress';
 
 export const EditProfileModal = ({ user }: { user: UserWithProfile }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoading, setIsLoading] = useState(false);
+  const startProgress = useProgress();
 
   const router = useRouter();
   const form = useForm({
@@ -40,6 +42,7 @@ export const EditProfileModal = ({ user }: { user: UserWithProfile }) => {
     await updateUserProfileByAuth(data);
 
     startTransition(() => {
+      startProgress();
       router.refresh();
       setIsLoading(false);
       onOpenChange();

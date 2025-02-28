@@ -4,7 +4,7 @@ import {
   ReadListSortCategories,
   ReadListSortCategoryLabels,
 } from '@/types/read-lists';
-import { Routes } from '@/types/routes';
+import { getRoute } from '@/types/routes';
 import { createQueryString } from '@/utils/query-params';
 import {
   Button,
@@ -16,15 +16,16 @@ import {
 } from '@heroui/react';
 import { IconAdjustments } from '@tabler/icons-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ReadListFilter } from './_validator';
 import { z } from 'zod';
-import { useOnClickOutside } from 'usehooks-ts';
+import { useProgress } from 'react-transition-progress';
 
 export const ReadListFilterMenu = () => {
   const router = useRouter();
   const params = useSearchParams();
+  const startProgress = useProgress();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterOpened, setFilterOpened] = useState(false);
@@ -46,7 +47,8 @@ export const ReadListFilterMenu = () => {
     const qs = createQueryString(data);
 
     startTransition(() => {
-      router.push(`${Routes.READLING_LIST}${qs}`);
+      startProgress();
+      router.push(`${getRoute('READLING_LIST')}${qs}`);
       setIsSubmitting(false);
       setFilterOpened(false);
     });

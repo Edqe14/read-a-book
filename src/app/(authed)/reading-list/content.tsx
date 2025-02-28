@@ -6,9 +6,10 @@ import { cn } from '@/utils/cn';
 import { useScrollDirection } from '@/utils/scroll-direction';
 import { Card, Chip, Image } from '@heroui/react';
 import { DateTime } from 'luxon';
-import Link from 'next/link';
 import { ReadListFilterMenu } from './filter-menu';
 import { Ratings } from '@/types/books';
+import { getRoute } from '@/types/routes';
+import { Link } from 'react-transition-progress/next';
 
 export const ReadingListContent = ({ readLists }: { readLists: ReadLists }) => {
   const scrollDirection = useScrollDirection();
@@ -43,7 +44,7 @@ export const ReadingListContent = ({ readLists }: { readLists: ReadLists }) => {
             <Link
               className="block"
               key={readList.id}
-              href={`/book/${readList.book.id}`}
+              href={getRoute('BOOK', readList.book.id)}
             >
               <Card className="p-4 flex-row gap-4" shadow="sm">
                 {readList.book.thumbnail && (

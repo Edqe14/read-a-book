@@ -4,10 +4,12 @@ import { addToReadList } from '@/services/read-list';
 import { Card, Button } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { startTransition, useState } from 'react';
+import { useProgress } from 'react-transition-progress';
 
 export const AddToListCard = ({ bookId }: { bookId: string }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const startProgress = useProgress();
 
   const addToList = async () => {
     setIsLoading(true);
@@ -16,6 +18,7 @@ export const AddToListCard = ({ bookId }: { bookId: string }) => {
       await addToReadList(bookId);
 
       startTransition(() => {
+        startProgress();
         router.refresh();
         setIsLoading(false);
       });

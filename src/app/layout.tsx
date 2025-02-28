@@ -1,11 +1,10 @@
 import './globals.css';
 
 import type { Metadata } from 'next';
-import { Inter, Noto_Serif } from 'next/font/google';
+import { Noto_Serif } from 'next/font/google';
 import { cn } from '@/utils/cn';
 import { BaseProviders } from './providers';
 
-const inter = Inter({ subsets: ['latin'], variable: '--inter' });
 const notoSerif = Noto_Serif({ subsets: ['latin'], variable: '--noto-serif' });
 
 export const metadata: Metadata = {
@@ -20,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={cn(inter.variable, notoSerif.variable)}>
+      <body suppressHydrationWarning className={cn(notoSerif.variable)}>
         <BaseProviders>{children}</BaseProviders>
       </body>
     </html>

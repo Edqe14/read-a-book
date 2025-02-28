@@ -15,7 +15,10 @@ export default async function AuthedLayout({
   }
 
   return (
-    <main className="max-w-screen-md w-full mx-auto flex-grow flex flex-col">
+    <main
+      suppressHydrationWarning
+      className="max-w-screen-md w-full mx-auto flex-grow flex flex-col"
+    >
       <Navbar session={session!} />
 
       {children}

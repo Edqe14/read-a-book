@@ -1,6 +1,9 @@
 import { db } from '@/db';
-import { userActivity } from '@/db/schema';
-import { and } from 'drizzle-orm';
+import { books, userActivity, users } from '@/db/schema';
+import { UserActivity } from '@/types/activity';
+import { auth } from '@/utils/auth';
+import { and, desc, eq } from 'drizzle-orm';
+import { AuthError } from 'next-auth';
 
 export const getLatestActivityByType = async ({
   userId,
@@ -53,4 +56,30 @@ export const createActivity = async (
   }
 
   return db.insert(userActivity).values(data).returning().execute();
+};
+
+export const getUserRecentActivities = async () => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  const data = await db
+    .select()
+    .from(userActivity)
+    .where(eq(userActivity.userId, BigInt(session.user.id)))
+    .orderBy(desc(userActivity.createdAt))
+    .limit(10)
+    .leftJoin(
+      books,
+      and(
+        eq(userActivity.activityType, UserActivity.BOOK.toString()),
+        eq(userActivity.detailId, books.id)
+      )
+    )
+    .leftJoin(
+      users,
+      and(
+        eq(userActivity.activityType, UserActivity.USER.toString()),
+        eq(userActivity.detailId, users.id)
+      )
+    );
 };

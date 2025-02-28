@@ -67,6 +67,48 @@ export const getUserByName = async (name: string) => {
   });
 };
 
+export const getFullUserByName = async (name: string) => {
+  return await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.name, name),
+    with: {
+      profile: true,
+      readLists: {
+        with: {
+          book: {
+            columns: {
+              categories: false,
+              description: false,
+              pageCount: false,
+              maturityRating: false,
+              isbn13: false,
+              isbn10: false,
+              language: false,
+              publisher: false,
+              createdAt: false,
+            },
+          },
+        },
+        where(lists, { gte, and, isNotNull }) {
+          return and(isNotNull(lists.rating), gte(lists.rating, 3));
+        },
+        orderBy(lists, { desc }) {
+          return desc(lists.rating);
+        },
+        limit: 5,
+        columns: {
+          currentPage: false,
+          status: false,
+          createdAt: false,
+          updatedAt: false,
+          startedAt: false,
+          finishedAt: false,
+          feedback: false,
+        },
+      },
+    },
+  });
+};
+
 export type UserWithProfile = NonNullable<
   Awaited<ReturnType<typeof getUserByName>>
 >;

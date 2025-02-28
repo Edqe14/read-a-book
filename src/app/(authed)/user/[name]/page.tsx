@@ -1,16 +1,18 @@
-import { getUserByName } from '@/services/user';
+import { getFullUserByName } from '@/services/user';
 import { auth } from '@/utils/auth';
-import { Button, Image, Tooltip } from '@heroui/react';
+import { Button, Card, Image, Tooltip } from '@heroui/react';
 import {
-  IconBallpenFilled,
   IconMapPinFilled,
+  IconSquareAsteriskFilled,
   IconWorld,
 } from '@tabler/icons-react';
 import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EditProfileModal } from './edit-profile/modal';
+import { getRoute } from '@/types/routes';
+import { assign, fill } from 'lodash-es';
+import { Link } from 'react-transition-progress/next';
 
 type ProfilePageProps = {
   params: Promise<{
@@ -23,30 +25,58 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     auth() as Promise<Session>,
     params,
   ]);
-  const user = await getUserByName(name);
+  const user = await getFullUserByName(name);
 
   if (!user) {
     return notFound();
   }
 
+  const favBooks = user.readLists.map((list) => (
+    <Link
+      href={getRoute('BOOK', list.bookId)}
+      key={list.bookId}
+      className="relative group w-full h-full"
+    >
+      <Image
+        src={list.book.thumbnail!}
+        fallbackSrc="/images/no_cover.webp"
+        shadow="sm"
+        width="100%"
+        classNames={{ img: 'object-contain' }}
+        draggable={false}
+      />
+
+      <div className="absolute inset-0 z-10 p-4 flex opacity-0 flex-col justify-between group-hover:bg-rose group-hover:opacity-100 rounded-xl transition">
+        <h3 className="text-base font-semibold blur-md group-hover:blur-0 transition duration-300">
+          {list.book.title}
+        </h3>
+        <p className="flex gap-1 items-center font-medium blur-md group-hover:blur-0 transition duration-300">
+          {list.rating}
+          <IconSquareAsteriskFilled className="inline" size={20} />
+        </p>
+      </div>
+    </Link>
+  ));
+
   return (
-    <section className="px-6">
+    <section className="px-6 space-y-8">
       <section className="flex gap-8">
         <Image
           src={`${user.profile?.picture!}?size=256`}
           alt={`${user.name} Picture`}
           width={200}
-          className="flex-shrink-0"
+          className="flex-shrink-0 border-8 border-primary"
+          draggable={false}
         />
 
         <section className="py-4 flex flex-col gap-6 flex-grow">
           <section className="flex justify-between">
             <div>
-              <h1 className="text-4xl font-semibold">{user.nick}</h1>
+              <h1 className="text-3xl font-semibold">{user.nick}</h1>
               <div className="flex gap-2 items-center">
                 <h3>@{user.name}</h3>
-                &#x2022;
-                <p className="text-sm flex gap-1">
+                <span className="text-rose">&#x2022;</span>
+                <div className="text-sm flex gap-1">
                   Joined
                   <Tooltip
                     placement="bottom"
@@ -57,7 +87,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                   >
                     {DateTime.fromJSDate(user.createdAt!).toRelative()}
                   </Tooltip>
-                </p>
+                </div>
               </div>
             </div>
 
@@ -94,6 +124,24 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           <p>{user.profile?.bio}</p>
         </section>
       </section>
+
+      <Card className="p-4 mx-4 space-y-4">
+        <h2 className="text-base font-semibold">
+          Some of {user.nick}'s favourites...
+        </h2>
+
+        <section className="grid grid-cols-5 gap-4">
+          {assign(
+            fill(
+              new Array(5),
+              <div className="bg-zinc-100 rounded-xl grid place-items-center text-zinc-500 shadow-inner"></div>
+            ),
+            favBooks
+          )}
+        </section>
+      </Card>
+
+      <h2 className="text-xl font-semibold">Recent activities</h2>
     </section>
   );
 }

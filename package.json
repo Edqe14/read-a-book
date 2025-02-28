@@ -11,7 +11,7 @@
     "db:push": "drizzle-kit push --force"
   },
   "dependencies": {
-    "@heroui/react": "^2.6.14",
+    "@heroui/react": "^2.7.4",
     "@sentry/nextjs": "^9",
     "@tabler/icons-react": "^3.30.0",
     "@tanstack/react-query": "^5.66.7",
@@ -28,9 +28,9 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.54.2",
+    "react-transition-progress": "^0.0.4",
     "react-use": "^17.6.0",
     "tailwind-merge": "^3.0.1",
-    "usehooks-ts": "^3.1.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {

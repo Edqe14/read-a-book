@@ -12,13 +12,13 @@ import {
 import { IconBook, IconDoorExit, IconUserFilled } from '@tabler/icons-react';
 import { signOut } from 'next-auth/react';
 import { SearchBar } from './search';
-import Link from 'next/link';
-import { Routes } from '@/types/routes';
+import { getRoute } from '@/types/routes';
+import { Link } from 'react-transition-progress/next';
 
 export const Navbar = ({ session }: { session: Session }) => {
   return (
     <header className="p-6 flex justify-between sticky top-0 h-20 z-50 bg-beige">
-      <Link href={Routes.DASHBOARD}>
+      <Link href={getRoute('DASHBOARD')}>
         <h1 className="tracking-tighter italic text-xl">read-a-book</h1>
       </Link>
 
@@ -37,7 +37,7 @@ export const Navbar = ({ session }: { session: Session }) => {
               key="profile"
               className="mb-2"
               classNames={{ title: 'flex gap-3 items-center' }}
-              href={`${Routes.USER_SHORT}${session.user.name}`}
+              href={`${getRoute('USER_SHORT')}${session.user.name}`}
             >
               <Image src={session.user.picture} alt="Profile pict" width={50} />
 

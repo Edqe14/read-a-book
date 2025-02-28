@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  addToast,
   Button,
   Card,
   Input,
@@ -18,6 +19,8 @@ import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@/services/book';
 import { Ratings } from '@/types/books';
+import { useProgress } from 'react-transition-progress';
+import { IconCircleCheckFilled } from '@tabler/icons-react';
 
 export const ReadingProgress = ({
   readList,
@@ -27,6 +30,7 @@ export const ReadingProgress = ({
   book: Book;
 }) => {
   const router = useRouter();
+  const startProgress = useProgress();
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
@@ -43,8 +47,14 @@ export const ReadingProgress = ({
     });
 
     startTransition(() => {
+      startProgress();
       router.refresh();
       setIsFormSubmitting(false);
+      addToast({
+        title: 'Saved!',
+        icon: <IconCircleCheckFilled />,
+        color: 'success',
+      });
     });
   };
 
@@ -73,6 +83,7 @@ export const ReadingProgress = ({
           });
 
           startTransition(() => {
+            startProgress();
             router.refresh();
             setIsStatusUpdating(false);
           });
