@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss';
 import { heroui } from '@heroui/react';
 
-const beige = {
+export const beige = {
   DEFAULT: '#E5E3D7',
   50: '#FDFDFC',
   100: '#F9F8F6',
@@ -15,7 +15,7 @@ const beige = {
   900: '#353222',
   950: '#1C1A12',
 };
-const oxford = {
+export const oxford = {
   DEFAULT: '#1C2541',
   50: '#E2E7F3',
   100: '#C6CEE6',
@@ -29,7 +29,7 @@ const oxford = {
   900: '#06080E',
   950: '#030407',
 };
-const rose = {
+export const rose = {
   DEFAULT: '#F76F53',
   50: '#FEEFEC',
   100: '#FDE2DD',
@@ -59,7 +59,6 @@ const config: Config = {
         rose,
       },
       fontFamily: {
-        inter: ['var(--inter)', 'system-ui', 'sans-serif'],
         'noto-serif': ['var(--noto-serif)', 'serif'],
       },
     },

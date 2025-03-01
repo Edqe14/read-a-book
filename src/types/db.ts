@@ -10,3 +10,6 @@ export type ListOptions<ColumnType> = {
   query?: string;
   filter?: (column: ColumnType, operators: Operators) => SQL[];
 };
+
+export class NotFoundError extends Error {}
+export class UnauthorizedError extends Error {}

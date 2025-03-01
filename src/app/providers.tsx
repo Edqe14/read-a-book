@@ -1,10 +1,11 @@
 'use client';
 
 import { queryClient } from '@/utils/query';
-import { HeroUIProvider } from '@heroui/react';
+import { HeroUIProvider, ToastProvider } from '@heroui/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { ReactNode } from 'react';
+import { ProgressBar, ProgressBarProvider } from 'react-transition-progress';
 
 declare module '@react-types/shared' {
   interface RouterConfig {
@@ -23,7 +24,12 @@ export const BaseProviders = ({ children }: { children: ReactNode }) => {
         navigate={router.push}
         className="min-h-screen flex flex-col w-full"
       >
-        {children}
+        <ProgressBarProvider>
+          <ProgressBar className="fixed h-1 z-50 shadow-lg shadow-rose-500/20 bg-rose-500 top-0" />
+          <ToastProvider />
+
+          {children}
+        </ProgressBarProvider>
       </HeroUIProvider>
     </QueryClientProvider>
   );

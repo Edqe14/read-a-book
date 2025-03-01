@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  rewrites() {
+    return [
+      {
+        source: '/@:name',
+        destination: '/user/:name',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

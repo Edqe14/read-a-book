@@ -1,4 +1,4 @@
-import { Routes } from '@/types/routes';
+import { getRoute } from '@/types/routes';
 import { auth, signIn } from '@/utils/auth';
 import { Button } from '@heroui/react';
 import { redirect } from 'next/navigation';
@@ -7,7 +7,7 @@ export default async function Home() {
   const session = await auth();
 
   if (session) {
-    return redirect(Routes.DASHBOARD);
+    return redirect(getRoute('DASHBOARD'));
   }
 
   return (

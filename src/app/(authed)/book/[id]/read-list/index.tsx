@@ -9,10 +9,8 @@ export const ReadList = async ({ book }: { book: Book }) => {
   const readList = await getBookReadList(session.user.id, book.id);
 
   if (!readList) {
-    return <AddToListCard userId={session.user.id} bookId={book.id} />;
+    return <AddToListCard bookId={book.id} />;
   }
 
-  return (
-    <ReadingProgress book={book} readList={readList} userId={session.user.id} />
-  );
+  return <ReadingProgress book={book} readList={readList} />;
 };

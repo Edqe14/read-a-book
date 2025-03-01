@@ -2,9 +2,15 @@
 
 import { db } from '@/db';
 import { readLists } from '@/db/schema';
-import { ListOptions } from '@/types/db';
-import { ReadListStatus } from '@/types/read-lists';
+import { ListOptions, NotFoundError, UnauthorizedError } from '@/types/db';
+import { ReadListStatus, ReadListStatusValues } from '@/types/read-lists';
 import { eq } from 'drizzle-orm';
+import { createActivity } from './activity';
+import { isNil, omit } from 'lodash-es';
+import { UserActivity } from '@/types/activity';
+import { AuthError } from 'next-auth';
+import { auth } from '@/utils/auth';
+import { z } from 'zod';
 
 export const getAllReadLists = async (
   userId: string,
@@ -60,12 +66,12 @@ export const getBookReadList = async (userId: string, bookId: string) => {
   });
 };
 
-export const addToReadList = async (
-  userId: string,
-  bookId: string
-): Promise<boolean> => {
+export const addToReadList = async (bookId: string): Promise<boolean> => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
   await db.insert(readLists).values({
-    userId: BigInt(userId),
+    userId: BigInt(session.user.id),
     bookId,
     status: ReadListStatus.PENDING,
   });
@@ -73,21 +79,82 @@ export const addToReadList = async (
   return true;
 };
 
+const readListValidator = z.object({
+  status: z.enum(ReadListStatusValues).optional(),
+  currentPage: z.number().optional(),
+  rating: z.number().min(1).max(5).optional(),
+  feedback: z.string().max(255).optional(),
+});
+
 export const updateReadList = async (
   readListId: number,
-  data: Partial<ReadList>
+  data: Partial<Omit<ReadList, 'userId'>>,
+  userId?: string
 ) => {
-  if (data.status === ReadListStatus.READING) {
-    data.startedAt = new Date();
+  await readListValidator.parseAsync(data);
+
+  const existing = await db.query.readLists.findFirst({
+    where: (list, { eq }) => eq(list.id, readListId),
+    columns: {
+      id: true,
+      userId: true,
+      bookId: true,
+    },
+  });
+  if (!existing) {
+    throw new NotFoundError();
   }
 
-  if (data.status === ReadListStatus.FINISHED) {
-    data.finishedAt = new Date();
+  if (!isNil(userId) && existing.userId.toString() !== userId) {
+    throw new UnauthorizedError();
   }
 
-  await db.update(readLists).set(data).where(eq(readLists.id, readListId));
+  const promises = [];
+
+  if (data.status) {
+    if (data.status === ReadListStatus.READING) {
+      data.startedAt = new Date();
+    }
+
+    if (data.status === ReadListStatus.FINISHED) {
+      data.finishedAt = new Date();
+    }
+
+    if (data.status !== ReadListStatus.PENDING) {
+      promises.push(
+        createActivity({
+          userId: existing.userId,
+          activityType: UserActivity.BOOK.toString(),
+          activitySubType: data.status,
+          detailId: existing.bookId,
+        })
+      );
+    }
+  }
+
+  await Promise.all([
+    db
+      .update(readLists)
+      .set(omit(data, 'userId', 'bookId'))
+      .where(eq(readLists.id, readListId)),
+    ...promises,
+  ]);
 
   return true;
+};
+
+export const updateReadListByAuth = async (
+  id: number,
+  data: Partial<Omit<ReadList, 'id' | 'userId'>>
+) => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  return updateReadList(
+    id,
+    Object.assign(data, { userId: session.user.id }),
+    session.user.id
+  );
 };
 
 export type ReadList = NonNullable<Awaited<ReturnType<typeof getBookReadList>>>;
