@@ -108,7 +108,7 @@ export const ReadingListContent = ({ readLists }: { readLists: ReadLists }) => {
                           {DateTime.fromJSDate(
                             readList.startedAt
                           ).toLocaleString(DateTime.DATE_MED, {
-                            locale: 'EN-uk',
+                            locale: 'en-GB',
                           })}
                         </p>
                       </div>
@@ -121,7 +121,7 @@ export const ReadingListContent = ({ readLists }: { readLists: ReadLists }) => {
                           {DateTime.fromJSDate(
                             readList.finishedAt!
                           ).toLocaleString(DateTime.DATE_MED, {
-                            locale: 'EN-uk',
+                            locale: 'en-GB',
                           })}
                         </p>
                       </div>

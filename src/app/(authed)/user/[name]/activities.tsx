@@ -30,7 +30,7 @@ const getSubject = (entry: RecentActivity) => {
                 {DateTime.fromISO(entry.books?.publishedDate!).toLocaleString(
                   DateTime.DATE_MED,
                   {
-                    locale: 'EN-uk',
+                    locale: 'en-GB',
                   }
                 )}
               </p>
@@ -103,7 +103,7 @@ export const UserActivities = async ({ user }: { user: UserWithProfile }) => {
                 content={DateTime.fromJSDate(
                   entry.user_activity.createdAt!
                 ).toLocaleString(DateTime.DATETIME_MED, {
-                  locale: 'EN-uk',
+                  locale: 'en-GB',
                 })}
               >
                 <p className="text-sm text-zinc-500">

@@ -17,6 +17,7 @@ import { Suspense } from 'react';
 import { UserActivities } from './activities';
 import { FollowButton } from './follow-button';
 import { FollowerInformation } from './follower-information';
+import { BookGridEntry } from '@/components/book-grid-entry';
 
 type ProfilePageProps = {
   params: Promise<{
@@ -37,34 +38,6 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   const { isFollowing, followerCount, followingCount } =
     await getUserFollowInfo(user.id);
-
-  const favBooks = user.readLists.map((list) => (
-    <Link
-      href={getRoute('BOOK', list.bookId)}
-      key={list.bookId}
-      className="relative group w-full h-full"
-      draggable={false}
-    >
-      <Image
-        src={list.book.thumbnail!}
-        fallbackSrc="/images/no_cover.webp"
-        shadow="sm"
-        width="100%"
-        classNames={{ img: 'object-contain' }}
-        draggable={false}
-      />
-
-      <div className="absolute inset-0 z-10 p-4 flex opacity-0 flex-col justify-between group-hover:bg-rose group-hover:opacity-100 rounded-xl transition">
-        <h3 className="text-base font-semibold blur-md group-hover:blur-0 transition duration-300">
-          {list.book.title}
-        </h3>
-        <p className="flex gap-1 items-center font-medium blur-md group-hover:blur-0 transition duration-300">
-          {list.rating}
-          <IconSquareAsteriskFilled className="inline" size={20} />
-        </p>
-      </div>
-    </Link>
-  ));
 
   return (
     <section className="px-6 space-y-8 pb-16">
@@ -93,7 +66,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                     color="danger"
                     content={DateTime.fromJSDate(
                       user.createdAt!
-                    ).toLocaleString(DateTime.DATE_MED, { locale: 'EN-uk' })}
+                    ).toLocaleString(DateTime.DATE_MED, { locale: 'en-GB' })}
                   >
                     {DateTime.fromJSDate(user.createdAt!).toRelative()}
                   </Tooltip>
@@ -145,7 +118,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
         </section>
       </section>
 
-      {favBooks.length > 0 && (
+      {user.readLists.length > 0 && (
         <Card className="p-4 mx-4 space-y-4">
           <h2 className="text-base font-semibold">
             Some of {user.nick ?? user.name}'s favourites...
@@ -157,7 +130,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 new Array(5),
                 <div className="bg-zinc-100 rounded-xl grid place-items-center text-zinc-500 shadow-inner"></div>
               ),
-              favBooks
+              user.readLists.map((list) => <BookGridEntry {...list} />)
             )}
           </section>
         </Card>
