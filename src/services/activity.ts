@@ -1,9 +1,7 @@
 import { db } from '@/db';
-import { books, userActivity, users } from '@/db/schema';
+import { books, userActivity, userProfiles, users } from '@/db/schema';
 import { UserActivity } from '@/types/activity';
-import { auth } from '@/utils/auth';
-import { and, desc, eq } from 'drizzle-orm';
-import { AuthError } from 'next-auth';
+import { and, desc, eq, sql } from 'drizzle-orm';
 
 export const getLatestActivityByType = async ({
   userId,
@@ -58,14 +56,24 @@ export const createActivity = async (
   return db.insert(userActivity).values(data).returning().execute();
 };
 
-export const getUserRecentActivities = async () => {
-  const session = await auth();
-  if (!session) throw new AuthError();
+export const getUserRecentActivities = async (userId: string | bigint) => {
+  const userProfileQuery = db
+    .select({
+      id: users.id,
+      nick: users.nick,
+      name: users.name,
+      createdAt: users.createdAt,
+      lastLogin: users.lastLogin,
+      picture: userProfiles.picture,
+    })
+    .from(users)
+    .leftJoin(userProfiles, eq(userProfiles.userId, users.id))
+    .as('user');
 
   const data = await db
     .select()
     .from(userActivity)
-    .where(eq(userActivity.userId, BigInt(session.user.id)))
+    .where(eq(userActivity.userId, BigInt(userId)))
     .orderBy(desc(userActivity.createdAt))
     .limit(10)
     .leftJoin(
@@ -76,10 +84,20 @@ export const getUserRecentActivities = async () => {
       )
     )
     .leftJoin(
-      users,
+      userProfileQuery,
       and(
         eq(userActivity.activityType, UserActivity.USER.toString()),
-        eq(userActivity.detailId, users.id)
+        eq(
+          userActivity.detailId,
+          sql<string>`cast(${userProfileQuery.id} as varchar)`
+        )
       )
-    );
+    )
+    .execute();
+
+  return data;
 };
+
+export type RecentActivity = Awaited<
+  ReturnType<typeof getUserRecentActivities>
+>[0];

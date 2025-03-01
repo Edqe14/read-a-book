@@ -1,6 +1,6 @@
-import { getFullUserByName } from '@/services/user';
+import { getFullUserByName, getUserFollowInfo } from '@/services/user';
 import { auth } from '@/utils/auth';
-import { Button, Card, Image, Tooltip } from '@heroui/react';
+import { Button, Card, Image, Skeleton, Tooltip } from '@heroui/react';
 import {
   IconMapPinFilled,
   IconSquareAsteriskFilled,
@@ -13,6 +13,10 @@ import { EditProfileModal } from './edit-profile/modal';
 import { getRoute } from '@/types/routes';
 import { assign, fill } from 'lodash-es';
 import { Link } from 'react-transition-progress/next';
+import { Suspense } from 'react';
+import { UserActivities } from './activities';
+import { FollowButton } from './follow-button';
+import { FollowerInformation } from './follower-information';
 
 type ProfilePageProps = {
   params: Promise<{
@@ -31,11 +35,15 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     return notFound();
   }
 
+  const { isFollowing, followerCount, followingCount } =
+    await getUserFollowInfo(user.id);
+
   const favBooks = user.readLists.map((list) => (
     <Link
       href={getRoute('BOOK', list.bookId)}
       key={list.bookId}
       className="relative group w-full h-full"
+      draggable={false}
     >
       <Image
         src={list.book.thumbnail!}
@@ -59,7 +67,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   ));
 
   return (
-    <section className="px-6 space-y-8">
+    <section className="px-6 space-y-8 pb-16">
       <section className="flex gap-8">
         <Image
           src={`${user.profile?.picture!}?size=256`}
@@ -69,10 +77,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           draggable={false}
         />
 
-        <section className="py-4 flex flex-col gap-6 flex-grow">
+        <section className="py-3 flex flex-col gap-6 flex-grow">
           <section className="flex justify-between">
             <div>
-              <h1 className="text-3xl font-semibold">{user.nick}</h1>
+              <h1 className="text-3xl font-semibold">
+                {user.nick ?? user.name}
+              </h1>
               <div className="flex gap-2 items-center">
                 <h3>@{user.name}</h3>
                 <span className="text-rose">&#x2022;</span>
@@ -118,30 +128,55 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               {user.id.toString() === session.user.id && (
                 <EditProfileModal user={user} />
               )}
+
+              {user.id.toString() !== session.user.id && (
+                <FollowButton user={user} followed={isFollowing} />
+              )}
             </div>
           </section>
 
           <p>{user.profile?.bio}</p>
+
+          <FollowerInformation
+            user={user}
+            followerCount={followerCount}
+            followingCount={followingCount}
+          />
         </section>
       </section>
 
-      <Card className="p-4 mx-4 space-y-4">
-        <h2 className="text-base font-semibold">
-          Some of {user.nick}'s favourites...
-        </h2>
+      {favBooks.length > 0 && (
+        <Card className="p-4 mx-4 space-y-4">
+          <h2 className="text-base font-semibold">
+            Some of {user.nick ?? user.name}'s favourites...
+          </h2>
 
-        <section className="grid grid-cols-5 gap-4">
-          {assign(
-            fill(
-              new Array(5),
-              <div className="bg-zinc-100 rounded-xl grid place-items-center text-zinc-500 shadow-inner"></div>
-            ),
-            favBooks
-          )}
-        </section>
-      </Card>
+          <section className="grid grid-cols-5 gap-4">
+            {assign(
+              fill(
+                new Array(5),
+                <div className="bg-zinc-100 rounded-xl grid place-items-center text-zinc-500 shadow-inner"></div>
+              ),
+              favBooks
+            )}
+          </section>
+        </Card>
+      )}
 
       <h2 className="text-xl font-semibold">Recent activities</h2>
+
+      <Suspense
+        fallback={
+          <Skeleton
+            className="h-72 rounded-xl bg-beige-600/25"
+            classNames={{
+              content: 'bg-beige-600',
+            }}
+          />
+        }
+      >
+        <UserActivities user={user} />
+      </Suspense>
     </section>
   );
 }

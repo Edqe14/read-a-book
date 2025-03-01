@@ -1,10 +1,12 @@
 'use client';
 
+import * as Sentry from '@sentry/nextjs';
 import { addToReadList } from '@/services/read-list';
-import { Card, Button } from '@heroui/react';
+import { Card, Button, addToast } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { startTransition, useState } from 'react';
 import { useProgress } from 'react-transition-progress';
+import { IconCircleXFilled } from '@tabler/icons-react';
 
 export const AddToListCard = ({ bookId }: { bookId: string }) => {
   const router = useRouter();
@@ -23,8 +25,13 @@ export const AddToListCard = ({ bookId }: { bookId: string }) => {
         setIsLoading(false);
       });
     } catch (err) {
-      console.error(err);
+      Sentry.captureException(err);
       setIsLoading(false);
+      addToast({
+        title: 'Oops, something went wrong',
+        icon: <IconCircleXFilled />,
+        color: 'danger',
+      });
     }
   };
 

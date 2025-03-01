@@ -42,7 +42,9 @@ export const Navbar = ({ session }: { session: Session }) => {
               <Image src={session.user.picture} alt="Profile pict" width={50} />
 
               <div>
-                <h4 className="text-base font-semibold">{session.user.nick}</h4>
+                <h4 className="text-base font-semibold">
+                  {session.user.nick ?? session.user.name}
+                </h4>
                 <p>@{session.user.name}</p>
               </div>
             </DropdownItem>

@@ -1,5 +1,6 @@
 'use client';
 
+import * as Sentry from '@sentry/nextjs';
 import {
   addToast,
   Button,
@@ -20,7 +21,7 @@ import { useRouter } from 'next/navigation';
 import { Book } from '@/services/book';
 import { Ratings } from '@/types/books';
 import { useProgress } from 'react-transition-progress';
-import { IconCircleCheckFilled } from '@tabler/icons-react';
+import { IconCircleCheckFilled, IconCircleXFilled } from '@tabler/icons-react';
 
 export const ReadingProgress = ({
   readList,
@@ -40,22 +41,32 @@ export const ReadingProgress = ({
     setIsFormSubmitting(true);
     const form = new FormData(event.currentTarget);
 
-    await updateReadListByAuth(readList.id, {
-      currentPage: Number(form.get('page')),
-      rating: Number(form.get('rating')),
-      feedback: form.get('feedback') as string,
-    });
+    try {
+      await updateReadListByAuth(readList.id, {
+        currentPage: Number(form.get('page')),
+        rating: Number(form.get('rating')),
+        feedback: form.get('feedback') as string,
+      });
 
-    startTransition(() => {
-      startProgress();
-      router.refresh();
+      startTransition(() => {
+        startProgress();
+        router.refresh();
+        setIsFormSubmitting(false);
+        addToast({
+          title: 'Saved!',
+          icon: <IconCircleCheckFilled />,
+          color: 'success',
+        });
+      });
+    } catch (err) {
+      Sentry.captureException(err);
       setIsFormSubmitting(false);
       addToast({
-        title: 'Saved!',
-        icon: <IconCircleCheckFilled />,
-        color: 'success',
+        title: 'Oops, something went wrong',
+        icon: <IconCircleXFilled />,
+        color: 'danger',
       });
-    });
+    }
   };
 
   return (
@@ -78,15 +89,31 @@ export const ReadingProgress = ({
         defaultSelectedKeys={[readList.status]}
         onSelectionChange={async (keys) => {
           setIsStatusUpdating(true);
-          await updateReadListByAuth(readList.id, {
-            status: (keys as Set<string>).values().next().value,
-          });
 
-          startTransition(() => {
-            startProgress();
-            router.refresh();
+          try {
+            await updateReadListByAuth(readList.id, {
+              status: (keys as Set<string>).values().next().value,
+            });
+
+            startTransition(() => {
+              startProgress();
+              router.refresh();
+              setIsStatusUpdating(false);
+              addToast({
+                title: 'Saved!',
+                icon: <IconCircleCheckFilled />,
+                color: 'success',
+              });
+            });
+          } catch (err) {
+            Sentry.captureException(err);
             setIsStatusUpdating(false);
-          });
+            addToast({
+              title: 'Oops, something went wrong',
+              icon: <IconCircleXFilled />,
+              color: 'danger',
+            });
+          }
         }}
       >
         {Object.values(ReadListStatus).map((key: string) => (

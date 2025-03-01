@@ -1,9 +1,10 @@
 'use server';
 
 import { db } from '@/db';
-import { userProfiles, users } from '@/db/schema';
+import { userActivity, userFollowing, userProfiles, users } from '@/db/schema';
+import { UserActivity } from '@/types/activity';
 import { auth } from '@/utils/auth';
-import { eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import { AuthError } from 'next-auth';
 import { z } from 'zod';
 
@@ -183,3 +184,140 @@ export const createOrUpdateUserProfile = async (
 
   return await updateUserProfile(id, updateData);
 };
+
+export const followUser = async (targetUserId: string | bigint) => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  await Promise.allSettled([
+    db
+      .insert(userFollowing)
+      .values({
+        followerId: BigInt(session.user.id),
+        followingId: BigInt(targetUserId),
+      })
+      .execute(),
+    db
+      .insert(userActivity)
+      .values({
+        activityType: UserActivity.USER.toString(),
+        activitySubType: UserActivity.USER.FOLLOWED,
+        detailId: targetUserId.toString(),
+        userId: BigInt(session.user.id),
+      })
+      .execute(),
+  ]);
+};
+
+export const unfollowUser = async (targetUserId: string | bigint) => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  await db
+    .delete(userFollowing)
+    .where(
+      and(
+        eq(userFollowing.followerId, BigInt(session.user.id)),
+        eq(userFollowing.followingId, BigInt(targetUserId))
+      )
+    )
+    .execute();
+};
+
+export const isFollowing = async (targetUserId: string | bigint) => {
+  const session = await auth();
+  if (!session) throw new AuthError();
+
+  const result = await db
+    .select({
+      id: userFollowing.followerId,
+    })
+    .from(userFollowing)
+    .where(
+      and(
+        eq(userFollowing.followerId, BigInt(session.user.id)),
+        eq(userFollowing.followingId, BigInt(targetUserId))
+      )
+    )
+    .execute();
+
+  return result.length > 0;
+};
+
+export const getUserFollowInfo = async (targetUserId: string | bigint) => {
+  const [isUserFollowing, followers, following] = await Promise.all([
+    isFollowing(targetUserId),
+    db
+      .select({
+        count: count(),
+      })
+      .from(userFollowing)
+      .where(eq(userFollowing.followingId, BigInt(targetUserId)))
+      .execute(),
+    db
+      .select({
+        count: count(),
+      })
+      .from(userFollowing)
+      .where(eq(userFollowing.followerId, BigInt(targetUserId)))
+      .execute(),
+  ]);
+
+  return {
+    isFollowing: isUserFollowing,
+    followerCount: Number(followers[0]?.count || 0),
+    followingCount: Number(following[0]?.count || 0),
+  };
+};
+
+export const getFollowers = async (targetUserId: string | bigint) => {
+  const q = db
+    .select({
+      id: users.id,
+      nick: users.nick,
+      name: users.name,
+      picture: userProfiles.picture,
+    })
+    .from(users)
+    .leftJoin(userProfiles, eq(userProfiles.userId, users.id))
+    .as('user');
+
+  return await db
+    .select({
+      id: q.id,
+      nick: q.nick,
+      name: q.name,
+      picture: q.picture,
+    })
+    .from(userFollowing)
+    .where(eq(userFollowing.followingId, BigInt(targetUserId)))
+    .innerJoin(q, eq(userFollowing.followerId, q.id))
+    .execute();
+};
+
+export const getFollowing = async (targetUserId: string | bigint) => {
+  const q = db
+    .select({
+      id: users.id,
+      nick: users.nick,
+      name: users.name,
+      picture: userProfiles.picture,
+    })
+    .from(users)
+    .leftJoin(userProfiles, eq(userProfiles.userId, users.id))
+    .as('user');
+
+  return await db
+    .select({
+      id: q.id,
+      nick: q.nick,
+      name: q.name,
+      picture: q.picture,
+    })
+    .from(userFollowing)
+    .where(eq(userFollowing.followerId, BigInt(targetUserId)))
+    .innerJoin(q, eq(userFollowing.followingId, q.id))
+    .execute();
+};
+
+export type FollowUser = Awaited<ReturnType<typeof getFollowers>>[number];

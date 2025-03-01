@@ -75,16 +75,20 @@ export const readListRelation = relations(readLists, ({ one }) => ({
   }),
 }));
 
-export const userActivity = pgTable('user_activity', {
-  id: serial('id').primaryKey(),
-  userId: bigint({ mode: 'bigint' })
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  activityType: char({ length: 1 }).notNull(),
-  activitySubType: char({ length: 1 }),
-  detailId: varchar({ length: 128 }),
-  createdAt: timestamp({ withTimezone: true }).defaultNow(),
-});
+export const userActivity = pgTable(
+  'user_activity',
+  {
+    id: serial('id').primaryKey(),
+    userId: bigint({ mode: 'bigint' })
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    activityType: char({ length: 1 }).notNull(),
+    activitySubType: char({ length: 1 }),
+    detailId: varchar({ length: 128 }),
+    createdAt: timestamp({ withTimezone: true }).defaultNow(),
+  },
+  (table) => [index('user_activity_detailId').on(table.detailId)]
+);
 
 export const userActivityRelations = relations(userActivity, ({ one }) => ({
   user: one(users, {
