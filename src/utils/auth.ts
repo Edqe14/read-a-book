@@ -1,13 +1,5 @@
-import { db } from '@/db';
 import { users } from '@/db/schema';
-import {
-  createOrUpdateUser,
-  createOrUpdateUserProfile,
-  createUser,
-  getUser,
-  updateUser,
-} from '@/services/user';
-import { eq } from 'drizzle-orm';
+import { createOrUpdateUser, createOrUpdateUserProfile } from '@/services/user';
 import NextAuth from 'next-auth';
 import Discord from 'next-auth/providers/discord';
 

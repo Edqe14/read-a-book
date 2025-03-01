@@ -46,7 +46,7 @@ export default async function Dashboard() {
                 new Array(5),
                 <div className="bg-zinc-100 rounded-xl grid place-items-center text-zinc-500 shadow-inner"></div>
               ),
-              readList.map((list) => <BookGridEntry {...list} />)
+              readList.map((list) => <BookGridEntry key={list.id} {...list} />)
             )}
           </section>
         </Card>

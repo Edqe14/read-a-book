@@ -11,11 +11,7 @@ import {
   Textarea,
 } from '@heroui/react';
 import { ReadListStatus } from '@/types/read-lists';
-import {
-  ReadList,
-  updateReadList,
-  updateReadListByAuth,
-} from '@/services/read-list';
+import { ReadList, updateReadListByAuth } from '@/services/read-list';
 import { startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Book } from '@/services/book';

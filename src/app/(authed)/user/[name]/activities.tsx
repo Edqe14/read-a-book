@@ -2,7 +2,7 @@ import { getUserRecentActivities, RecentActivity } from '@/services/activity';
 import { UserWithProfile } from '@/services/user';
 import { UserActivity, UserActivityMessages } from '@/types/activity';
 import { getRoute } from '@/types/routes';
-import { Card, Image, Tooltip, user } from '@heroui/react';
+import { Card, Image, Tooltip } from '@heroui/react';
 import { DateTime } from 'luxon';
 import { Link } from 'react-transition-progress/next';
 
@@ -25,15 +25,7 @@ const getSubject = (entry: RecentActivity) => {
               <h4 className="font-semibold text-base">{entry.books!.title}</h4>
               <p className="text-sm mb-4">{entry.books?.authors?.join(', ')}</p>
 
-              <p className="text-sm text-zinc-500">
-                Published{' '}
-                {DateTime.fromISO(entry.books?.publishedDate!).toLocaleString(
-                  DateTime.DATE_MED,
-                  {
-                    locale: 'en-GB',
-                  }
-                )}
-              </p>
+              <p className="text-sm text-zinc-500">{entry.books!.publisher}</p>
             </div>
           </section>
         </Link>
@@ -89,7 +81,7 @@ export const UserActivities = async ({ user }: { user: UserWithProfile }) => {
               <h3 className="flex gap-2 items-center">
                 <strong className="flex items-center gap-2">
                   <Image
-                    src={user.profile?.picture!}
+                    src={user.profile!.picture!}
                     alt={user.name}
                     width={24}
                   />

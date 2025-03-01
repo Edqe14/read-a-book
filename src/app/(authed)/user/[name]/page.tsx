@@ -1,16 +1,11 @@
 import { getFullUserByName, getUserFollowInfo } from '@/services/user';
 import { auth } from '@/utils/auth';
 import { Button, Card, Image, Skeleton, Tooltip } from '@heroui/react';
-import {
-  IconMapPinFilled,
-  IconSquareAsteriskFilled,
-  IconWorld,
-} from '@tabler/icons-react';
+import { IconMapPinFilled, IconWorld } from '@tabler/icons-react';
 import { DateTime } from 'luxon';
 import { Session } from 'next-auth';
 import { notFound } from 'next/navigation';
 import { EditProfileModal } from './edit-profile/modal';
-import { getRoute } from '@/types/routes';
 import { assign, fill } from 'lodash-es';
 import { Link } from 'react-transition-progress/next';
 import { Suspense } from 'react';
@@ -43,7 +38,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     <section className="px-6 space-y-8 pb-16">
       <section className="flex gap-8">
         <Image
-          src={`${user.profile?.picture!}?size=256`}
+          src={`${user.profile!.picture}?size=256`}
           alt={`${user.name} Picture`}
           width={200}
           className="flex-shrink-0 border-8 border-primary"
@@ -121,7 +116,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       {user.readLists.length > 0 && (
         <Card className="p-4 mx-4 space-y-4">
           <h2 className="text-base font-semibold">
-            Some of {user.nick ?? user.name}'s favourites...
+            Some of {user.nick ?? user.name}&apos;s favourites...
           </h2>
 
           <section className="grid grid-cols-5 gap-4">
@@ -130,7 +125,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 new Array(5),
                 <div className="bg-zinc-100 rounded-xl grid place-items-center text-zinc-500 shadow-inner"></div>
               ),
-              user.readLists.map((list) => <BookGridEntry {...list} />)
+              user.readLists.map((list) => (
+                <BookGridEntry key={list.id} {...list} />
+              ))
             )}
           </section>
         </Card>

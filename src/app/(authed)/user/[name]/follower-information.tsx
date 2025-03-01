@@ -14,7 +14,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   Spinner,
   useDisclosure,

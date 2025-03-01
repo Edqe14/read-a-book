@@ -22,6 +22,7 @@ export const BookGridEntry = (list: {
     >
       <Image
         src={list.book.thumbnail!}
+        alt={list.book.title}
         fallbackSrc="/images/no_cover.webp"
         shadow="sm"
         width="100%"

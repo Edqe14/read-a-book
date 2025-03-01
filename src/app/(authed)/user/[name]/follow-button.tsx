@@ -46,7 +46,7 @@ export const FollowButton = ({
           color: 'success',
         });
       });
-    } catch (err: any) {
+    } catch (err) {
       Sentry.captureException(err);
       setIsLoading(false);
       addToast({
