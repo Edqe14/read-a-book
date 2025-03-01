@@ -14,6 +14,7 @@ import {
 import { IconSearch } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Link } from 'react-transition-progress/next';
 import { useDebounce } from 'react-use';
 
 export const SearchBar = () => {
@@ -115,6 +116,7 @@ export const SearchBar = () => {
                     href={`/book/${item.id}`}
                     key={item.id}
                     classNames={{ title: 'flex gap-3' }}
+                    as={Link}
                   >
                     {item.volumeInfo?.imageLinks?.thumbnail && (
                       <div className="flex-shrink-0">

@@ -5,6 +5,31 @@ import { Suspense } from 'react';
 import { Skeleton } from '@heroui/react';
 import { notFound } from 'next/navigation';
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const book = await getBook(id);
+
+  if (!book) {
+    return notFound();
+  }
+
+  return {
+    title: book.title,
+    description:
+      book.description ||
+      `Read ${book.title} by ${book.authors?.join(', ') ?? book.publisher}`,
+    openGraph: {
+      title: book.title,
+      description: book.description,
+      images: book.thumbnail ? [{ url: book.thumbnail }] : [],
+    },
+  };
+}
+
 export default async function BookPage({
   params,
 }: {

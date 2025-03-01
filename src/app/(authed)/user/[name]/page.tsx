@@ -20,6 +20,30 @@ type ProfilePageProps = {
   }>;
 };
 
+export async function generateMetadata({ params }: ProfilePageProps) {
+  const { name } = await params;
+  const user = await getFullUserByName(name);
+
+  if (!user) {
+    return notFound();
+  }
+
+  return {
+    title: `${user.nick ?? user.name} (@${user.name})`,
+    description:
+      user.profile?.bio ?? `Profile page for ${user.nick ?? user.name}`,
+    openGraph: {
+      images: [
+        {
+          url: user.profile?.picture,
+          width: 200,
+          height: 200,
+        },
+      ],
+    },
+  };
+}
+
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const [session, { name }] = await Promise.all([
     auth() as Promise<Session>,

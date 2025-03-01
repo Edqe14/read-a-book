@@ -38,6 +38,7 @@ export const Navbar = ({ session }: { session: Session }) => {
               className="mb-2"
               classNames={{ title: 'flex gap-3 items-center' }}
               href={`${getRoute('USER_SHORT')}${session.user.name}`}
+              as={Link}
             >
               <Image src={session.user.picture} alt="Profile pict" width={50} />
 
@@ -53,6 +54,7 @@ export const Navbar = ({ session }: { session: Session }) => {
               key="reading-list"
               href="/reading-list"
               startContent={<IconBook size={16} />}
+              as={Link}
             >
               Reading list
             </DropdownItem>
